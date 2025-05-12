@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>开发者工具</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="top-bar">
+    <div class="logo">开发者工具</div>
+    <div class="language-selector">
+      <select id="language-select">
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+  <div class="sidebar">
+    <div class="subtitle">助力开发人员和IT工作者</div>
+    <div class="menu-item active" data-tool-id="jsonformatter">
+      <i class="mdi mdi-code-json"></i>
+      <span>JSON转换和格式化</span>
+    </div>
+    <div class="menu-item" data-tool-id="textencryption">
+      <i class="mdi mdi-shield-key"></i>
+      <span>加密/解密文本</span>
+    </div>
+    <div class="menu-item" data-tool-id="base64converter">
+      <i class="mdi mdi-file-code"></i>
+      <span>Base64 文件转换器</span>
+    </div>
+    <div class="menu-item" data-tool-id="caseconverter">
+      <i class="mdi mdi-format-letter-case"></i>
+      <span>大小写转换</span>
+    </div>
+    <div class="menu-item" data-tool-id="texttoascii">
+      <i class="mdi mdi-code-array"></i>
+      <span>文本到 ASCII 二进制</span>
+    </div>
+    <div class="menu-item" data-tool-id="texttounicode">
+      <i class="mdi mdi-translate"></i>
+      <span>文转 Unicode</span>
+    </div>
+    <div class="menu-item" data-tool-id="jsondiff">
+      <i class="mdi mdi-file-compare"></i>
+      <span>JSON 差异比较</span>
+    </div>
+    <div class="menu-item" data-tool-id="stringreverser">
+      <i class="mdi mdi-format-text-rotation-none"></i>
+      <span>字符串逆序</span>
+    </div>
+    <div class="menu-item" data-tool-id="textdiff">
+      <i class="mdi mdi-file-document-multiple"></i>
+      <span>文本比较</span>
+    </div>
+    <div class="menu-item" data-tool-id="asciiartgenerator">
+      <i class="mdi mdi-format-text"></i>
+      <span>ASCII Art Text Generator</span>
+    </div>
+    <div class="menu-item active" data-tool-id="xmlformatter">
+      <i class="mdi mdi-xml"></i>
+      <span>XML 格式化</span>
+    </div>
+    <div class="menu-item" data-tool-id="texticongenerator">
+      <i class="mdi mdi-format-font"></i>
+      <span>文字图标生成器</span>
+    </div>
+    <div class="menu-item" data-tool-id="base64imageconverter">
+      <i class="mdi mdi-image"></i>
+      <span>Base64转图片</span>
+    </div>
+    <div class="menu-item" data-tool-id="jsontojavabean">
+      <i class="mdi mdi-language-java"></i>
+      <span>JSON转JavaBean</span>
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="tool-intro">
+      <h2>开发者工具集</h2>
+      <p>本工具集提供多种实用功能，包括JSON/XML格式化、文本加密解密、Base64转换、大小写转换等，帮助开发者提高工作效率。</p>
+      <p>点击左侧菜单选择不同工具，每个工具都有详细的使用说明和示例。</p>
+    </div>
+  </div>
+
+  <script src="index.js" type="module"></script>
+</body>
+</html>

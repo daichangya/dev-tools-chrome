@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "开发者工具",
+  "version": "1.0.0",
+  "description": "集成JSON/XML格式化、文本加密解密、Base64编解码、编码转换等开发者常用工具套件",
+  "action": {
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "permissions": [
+    "clipboardWrite",
+    "clipboardRead",
+    "tabs"
+  ]
+}
