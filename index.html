@@ -5,14 +5,15 @@
   <title>开发者工具</title>
   <link rel="stylesheet" href="css/materialdesignicons.min.css">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="js/lib/codemirror/codemirror.css">
 </head>
 <body>
   <div class="top-bar">
     <div class="logo">开发者工具</div>
     <div class="language-selector">
       <select id="language-select">
-        <option value="zh">中文</option>
         <option value="en">English</option>
+        <option value="zh">中文</option>
       </select>
     </div>
   </div>
@@ -83,6 +84,11 @@
     </div>
   </div>
 
+  <script src="js/lib/diff.js"></script>
+  <script src="js/lib/codemirror/codemirror.js"></script>
+  <script src="js/lib/codemirror/javascript.js"></script>
+  <script src="js/lib/codemirror/xml.js"></script>
+  <script src="js/lib/codemirror/loadmode.js"></script>
   <script src="index.js" type="module"></script>
 </body>
 </html>

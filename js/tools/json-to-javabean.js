@@ -1,10 +1,12 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class JsonToJavaBean extends BaseTool {
   constructor() {
     super();
-    this.defaultValue = '{\n  \"example\": \"这是一个JSON示例\",\n  \"data\": [1, 2, 3],\n  \"nested\": {\n    \"key\": \"value\"\n  }\n}';
+    this.defaultValue = '{\n  \"example\": \"Json Formatter\",\n  \"data\": [1, 2, 3],\n  \"nested\": {\n    \"key\": \"value\"\n  }\n}';
+    this.inputEditor = null;
   }
 
   show() {
@@ -12,6 +14,16 @@ export class JsonToJavaBean extends BaseTool {
     const input = document.getElementById('input');
     if (input) {
       input.value = this.defaultValue;
+      // 创建JSON语法高亮编辑器
+      setTimeout(() => {
+        this.inputEditor = createJsonEditor(input, {
+          placeholder: languageManager.getText('inputRequired', 'messages'),
+          onInput: (e, value) => {
+            input.value = value;
+          }
+        });
+        this.inputEditor.setValue(this.defaultValue);
+      }, 0);
     }
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
@@ -135,7 +147,7 @@ ${nestedClasses.length > 0 ? '\n\n' + nestedClasses.join('\n\n') : ''}
     if (processBtn) {
       processBtn.addEventListener('click', () => {
         try {
-          const inputText = input.value.trim();
+          const inputText = this.inputEditor ? this.inputEditor.getValue().trim() : input.value.trim();
           if (!inputText) {
             output.value = languageManager.getToolText(this.toolId,'inputRequired');
             return;
@@ -150,6 +162,43 @@ ${nestedClasses.length > 0 ? '\n\n' + nestedClasses.join('\n\n') : ''}
       });
     }
 
-    this.setupCommonEventListeners();
+    // 设置copy按钮（处理CodeMirror编辑器）
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const output = document.getElementById('output');
+        const value = output ? output.value : '';
+        if (value) {
+          navigator.clipboard.writeText(value)
+            .then(() => {
+              const originalText = copyBtn.textContent;
+              copyBtn.textContent = languageManager.getText('copySuccess', 'messages');
+              setTimeout(() => {
+                copyBtn.textContent = originalText;
+              }, 2000);
+            })
+            .catch(err => {
+              console.error('复制失败:', err);
+            });
+        }
+      });
+    }
+
+    // 设置clear按钮
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        if (this.inputEditor) {
+          this.inputEditor.setValue('');
+        } else if (input) {
+          input.value = '';
+        }
+        if (output) {
+          output.value = '';
+        }
+      });
+    }
   }
 }

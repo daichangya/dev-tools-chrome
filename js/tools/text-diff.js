@@ -1,3 +1,8 @@
+/**
+ * Text Diff工具类
+ * 使用jsdiff库进行文本差异比较
+ * @author daichangya
+ */
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
 
@@ -19,6 +24,9 @@ export class TextDiff extends BaseTool {
           <button id="processBtn">${languageManager.getText('compare', 'buttons')}</button>
           <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
           <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
+          <a href="https://jsdiff.com/" target="_blank" style="margin-left: 10px; color: #0066cc; text-decoration: none;">
+            🌐 ${languageManager.getToolText(this.toolId, 'openInWebsite') || '在 jsdiff.com 中打开'}
+          </a>
       </div>
       <div class="container" style="display: flex; flex-direction: column; gap: 20px;">
         <div style="display: flex; justify-content: space-between; gap: 20px;">
@@ -41,7 +49,14 @@ export class TextDiff extends BaseTool {
     this.setupSpecificEventListeners();
 
     // 添加差异显示样式
+    this.addStyles();
+  }
+
+  addStyles() {
+    if (document.getElementById('text-diff-styles')) return;
+    
     const style = document.createElement('style');
+    style.id = 'text-diff-styles';
     style.textContent = `
       .diff-output {
         font-family: monospace;
@@ -51,6 +66,16 @@ export class TextDiff extends BaseTool {
         border: 1px solid #ddd;
         max-height: 400px;
         overflow-y: auto;
+      }
+      .diff-output ins {
+        background-color: #e6ffe6;
+        color: #006600;
+        text-decoration: none;
+      }
+      .diff-output del {
+        background-color: #ffe6e6;
+        color: #cc0000;
+        text-decoration: none;
       }
       .diff-added {
         background-color: #e6ffe6;
@@ -76,121 +101,134 @@ export class TextDiff extends BaseTool {
 
     if (processBtn) {
       processBtn.addEventListener('click', () => {
-        const text1 = input.value;
-        const text2 = input2.value;
-
-        if (!text1 || !text2) {
-          output.innerHTML = languageManager.getToolText(this.toolId,'inputRequired');
-          return;
-        }
-
-        const type = compareType.value;
-        const diffs = this.compareTexts(text1, text2, type);
-        output.innerHTML = this.formatDiffs(diffs);
+        this.performDiff();
       });
     }
 
-    // 调用父类的通用事件监听器设置
-    this.setupCommonEventListeners();
-  }
-
-  compareTexts(text1, text2, type) {
-    let parts1, parts2;
-
-    switch (type) {
-      case 'character':
-        parts1 = text1.split('');
-        parts2 = text2.split('');
-        break;
-      case 'word':
-        parts1 = text1.split(/\s+/);
-        parts2 = text2.split(/\s+/);
-        break;
-      case 'line':
-        parts1 = text1.split('\n');
-        parts2 = text2.split('\n');
-        break;
-    }
-
-    return this.findDiff(parts1, parts2);
-  }
-
-  findDiff(parts1, parts2) {
-    const matrix = Array(parts2.length + 1).fill().map(() =>
-      Array(parts1.length + 1).fill(0)
-    );
-
-    // 填充矩阵
-    for (let i = 0; i <= parts2.length; i++) {
-      for (let j = 0; j <= parts1.length; j++) {
-        if (i === 0) {
-          matrix[i][j] = j;
-        } else if (j === 0) {
-          matrix[i][j] = i;
-        } else if (parts2[i - 1] === parts1[j - 1]) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j] + 1,    // 删除
-            matrix[i][j - 1] + 1,    // 插入
-            matrix[i - 1][j - 1] + 1  // 替换
-          );
+    // 输入变化时自动比较
+    if (input && input2 && compareType) {
+      const performDiff = () => {
+        if (input.value.trim() && input2.value.trim()) {
+          this.performDiff();
         }
-      }
+      };
+      
+      input.addEventListener('input', performDiff);
+      input2.addEventListener('input', performDiff);
+      compareType.addEventListener('change', performDiff);
     }
 
-    // 回溯找出差异
-    const diffs = [];
-    let i = parts2.length;
-    let j = parts1.length;
-
-    while (i > 0 || j > 0) {
-      if (i > 0 && j > 0 && parts2[i - 1] === parts1[j - 1]) {
-        diffs.unshift({
-          type: 'unchanged',
-          value: parts1[j - 1]
-        });
-        i--;
-        j--;
-      } else if (i > 0 && (j === 0 || matrix[i - 1][j] <= matrix[i][j - 1])) {
-        diffs.unshift({
-          type: 'added',
-          value: parts2[i - 1]
-        });
-        i--;
-      } else if (j > 0) {
-        diffs.unshift({
-          type: 'removed',
-          value: parts1[j - 1]
-        });
-        j--;
-      }
+    // 设置copy按钮（输出是div，需要特殊处理）
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const output = document.getElementById('output');
+        if (output && output.textContent) {
+          navigator.clipboard.writeText(output.textContent)
+            .then(() => {
+              const originalText = copyBtn.textContent;
+              copyBtn.textContent = languageManager.getText('copySuccess', 'messages');
+              setTimeout(() => {
+                copyBtn.textContent = originalText;
+              }, 2000);
+            })
+            .catch(err => {
+              console.error('复制失败:', err);
+            });
+        }
+      });
     }
 
-    return diffs;
+    // 设置clear按钮
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        const input = document.getElementById('input');
+        const input2 = document.getElementById('input2');
+        const output = document.getElementById('output');
+        if (input) input.value = '';
+        if (input2) input2.value = '';
+        if (output) output.innerHTML = '';
+      });
+    }
   }
 
-  formatDiffs(diffs) {
-    return diffs.map(diff => {
+  performDiff() {
+    const input = document.getElementById('input');
+    const input2 = document.getElementById('input2');
+    const output = document.getElementById('output');
+    const compareType = document.getElementById('compareType');
+
+    if (!input || !input2 || !output || !compareType) return;
+
+    const text1 = input.value;
+    const text2 = input2.value;
+
+    if (!text1 || !text2) {
+      output.innerHTML = languageManager.getToolText(this.toolId,'inputRequired');
+      return;
+    }
+
+    // 检查jsdiff库是否加载
+    if (typeof Diff === 'undefined') {
+      output.innerHTML = 'jsdiff库未加载';
+      return;
+    }
+
+    const type = compareType.value;
+    let diff;
+
+    // 根据类型使用对应的jsdiff方法
+    try {
+      switch (type) {
+        case 'character':
+          diff = Diff.diffChars(text1, text2);
+          break;
+        case 'word':
+          diff = Diff.diffWords(text1, text2);
+          break;
+        case 'line':
+          diff = Diff.diffLines(text1, text2);
+          break;
+        default:
+          diff = Diff.diffChars(text1, text2);
+      }
+
+      // 格式化并显示差异
+      output.innerHTML = this.formatDiffs(diff);
+    } catch (error) {
+      output.innerHTML = `比较错误: ${error.message}`;
+    }
+  }
+
+  formatDiffs(diff) {
+    if (!diff || diff.length === 0) {
+      return '<span class="diff-unchanged">没有差异</span>';
+    }
+
+    return diff.map(part => {
       let className = '';
       let prefix = '';
 
-      switch (diff.type) {
-        case 'added':
-          className = 'diff-added';
-          prefix = '+ ';
-          break;
-        case 'removed':
-          className = 'diff-removed';
-          prefix = '- ';
-          break;
-        case 'unchanged':
-          className = 'diff-unchanged';
-          prefix = '  ';
-          break;
+      if (part.added) {
+        className = 'diff-added';
+        prefix = '+ ';
+      } else if (part.removed) {
+        className = 'diff-removed';
+        prefix = '- ';
+      } else {
+        className = 'diff-unchanged';
+        prefix = '  ';
       }
 
-      return `<span class="${className}">${prefix}${this.escapeHtml(diff.value)}</span>\n`;
+      // 使用<ins>和<del>标签，同时保持样式类
+      if (part.added) {
+        return `<ins class="${className}">${this.escapeHtml(part.value)}</ins>`;
+      } else if (part.removed) {
+        return `<del class="${className}">${this.escapeHtml(part.value)}</del>`;
+      } else {
+        return `<span class="${className}">${this.escapeHtml(part.value)}</span>`;
+      }
     }).join('');
   }
 

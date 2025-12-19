@@ -85,7 +85,10 @@ const i18n = {
         removed: '删除',
         typeChanged: '类型改变',
         valueChanged: '值改变',
-        unknownChange: '未知改变'
+        unknownChange: '未知改变',
+        openInWebsite: '在 jsdiff.com 中打开',
+        textView: '文本视图',
+        structuredView: '结构化视图'
       },
       'stringreverser': {
         title: '字符串反转工具',
@@ -106,7 +109,8 @@ const i18n = {
         text1Placeholder: '请输入第一段文本...',
         text2Placeholder: '请输入第二段文本...',
         diffResult: '差异结果',
-        inputRequired: '请输入要比较的两段文本'
+        inputRequired: '请输入要比较的两段文本',
+        openInWebsite: '在 jsdiff.com 中打开'
       },
       'asciiartgenerator': {
         title: 'ASCII Art Text Generator',
@@ -245,7 +249,10 @@ const i18n = {
         removed: 'Removed',
         typeChanged: 'Type changed',
         valueChanged: 'Value changed',
-        unknownChange: 'Unknown change'
+        unknownChange: 'Unknown change',
+        openInWebsite: 'Open in jsdiff.com',
+        textView: 'Text View',
+        structuredView: 'Structured View'
       },
       'stringreverser': {
         title: 'String Reverse',
@@ -266,7 +273,8 @@ const i18n = {
         text1Placeholder: 'Enter first text block...',
         text2Placeholder: 'Enter second text block...',
         diffResult: 'Diff result',
-        inputRequired: 'Please enter two text blocks to compare'
+        inputRequired: 'Please enter two text blocks to compare',
+        openInWebsite: 'Open in jsdiff.com'
       },
       'asciiartgenerator': {
         title: 'ASCII Art Text Generator',

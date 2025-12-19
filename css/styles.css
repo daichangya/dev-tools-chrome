@@ -267,3 +267,31 @@
   input:checked + .slider:before {
     transform: translateX(20px);  /* 选中状态滑块向右平移20px */
   }
+
+  /* CodeMirror编辑器样式定制 */
+  .CodeMirror {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    height: auto;
+    min-height: 200px;
+  }
+
+  .CodeMirror-scroll {
+    min-height: 200px;
+  }
+
+  .CodeMirror-focused {
+    outline: none;
+    border-color: var(--primary-color);
+  }
+
+  .CodeMirror-readonly .CodeMirror-cursor {
+    display: none;
+  }
+
+  /* 确保CodeMirror容器正确显示 */
+  .CodeMirror-wrap {
+    height: 100%;
+  }

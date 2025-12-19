@@ -2,7 +2,7 @@ import i18n from './i18n.js';
 
 class LanguageManager {
   constructor() {
-    this.currentLanguage = 'zh';
+    this.currentLanguage = 'en';
     this.supportedLanguages = ['zh', 'en'];
     this.setupLanguageSelector();
   }

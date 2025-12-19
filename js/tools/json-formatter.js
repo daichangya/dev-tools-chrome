@@ -1,19 +1,44 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class JSONFormatter extends BaseTool {
   constructor() {
     super();
-    this.defaultValue = '{\n  "example": "这是一个JSON示例",\n  "data": [1, 2, 3],\n  "nested": {\n    "key": "value"\n  }\n}';
+    this.defaultValue = '{\n  "example": "Json Formatter",\n  "data": [1, 2, 3],\n  "nested": {\n    "key": "value"\n  }\n}';
+    this.inputEditor = null;
+    this.outputEditor = null;
   }
 
   show() {
-
     this.container.innerHTML = this.createUI()
     const input = document.getElementById('input');
+    const output = document.getElementById('output');
+    
     if (input) {
       input.value = this.defaultValue;
+      // 创建JSON语法高亮编辑器
+      this.inputEditor = createJsonEditor(input, {
+        placeholder: languageManager.getText('inputRequired', 'messages'),
+        onInput: (e, value) => {
+          input.value = value;
+        }
+      });
+      this.inputEditor.setValue(this.defaultValue);
     }
+    
+    if (output) {
+      // 为输出也创建JSON语法高亮编辑器（只读）
+      this.outputEditor = createJsonEditor(output, {
+        placeholder: '',
+        readOnly: true,
+        onInput: () => {
+          // 输出是只读的，但保持同步
+          output.value = this.outputEditor.getValue();
+        }
+      });
+    }
+    
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
   }
@@ -36,9 +61,14 @@ export class JSONFormatter extends BaseTool {
     if (processBtn) {
       processBtn.addEventListener('click', () => {
         try {
-          const inputText = input.value.trim();
+          const inputText = this.inputEditor ? this.inputEditor.getValue().trim() : input.value.trim();
           if (!inputText) {
-            output.value = '请输入要格式化的JSON字符串';
+            const errorMsg = '请输入要格式化的JSON字符串';
+            if (this.outputEditor) {
+              this.outputEditor.setValue(errorMsg);
+            } else {
+              output.value = errorMsg;
+            }
             return;
           }
 
@@ -48,14 +78,59 @@ export class JSONFormatter extends BaseTool {
           // 尝试解析JSON
           const jsonObj = JSON.parse(processedText);
           // 格式化输出，使用2个空格缩进
-          output.value = JSON.stringify(jsonObj, null, 2);
+          const formatted = JSON.stringify(jsonObj, null, 2);
+          if (this.outputEditor) {
+            this.outputEditor.setValue(formatted);
+          } else {
+            output.value = formatted;
+          }
         } catch (error) {
-          output.value = `JSON解析错误：${error.message}`;
+          const errorMsg = `JSON解析错误：${error.message}`;
+          if (this.outputEditor) {
+            this.outputEditor.setValue(errorMsg);
+          } else {
+            output.value = errorMsg;
+          }
         }
       });
     }
 
-    // 调用父类的通用事件监听器设置
-    this.setupCommonEventListeners();
+    // 设置copy按钮（处理CodeMirror编辑器）
+    const copyBtn = document.getElementById('copyBtn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const value = this.outputEditor ? this.outputEditor.getValue() : (output ? output.value : '');
+        if (value) {
+          navigator.clipboard.writeText(value)
+            .then(() => {
+              const originalText = copyBtn.textContent;
+              copyBtn.textContent = languageManager.getText('copySuccess', 'messages');
+              setTimeout(() => {
+                copyBtn.textContent = originalText;
+              }, 2000);
+            })
+            .catch(err => {
+              console.error('复制失败:', err);
+            });
+        }
+      });
+    }
+
+    // 设置clear按钮
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (this.inputEditor) {
+          this.inputEditor.setValue('');
+        } else if (input) {
+          input.value = '';
+        }
+        if (this.outputEditor) {
+          this.outputEditor.setValue('');
+        } else if (output) {
+          output.value = '';
+        }
+      });
+    }
   }
 }
