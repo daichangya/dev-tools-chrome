@@ -5,6 +5,8 @@ class LanguageManager {
     this.currentLanguage = 'en';
     this.supportedLanguages = ['zh', 'en'];
     this.setupLanguageSelector();
+    // 初始化时应用默认语言设置
+    this.updateUI();
   }
 
   setupLanguageSelector() {
