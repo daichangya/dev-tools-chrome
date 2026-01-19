@@ -86,19 +86,19 @@ export class TextIconGenerator extends BaseTool {
       generateBtn.addEventListener('click', () => {
         const text = input.value.trim().charAt(0);
         if (!text) {
-          output.value = languageManager.getText('messages.inputTextRequired', this.toolId);
+          output.value = languageManager.getText('messages.inputTextRequired');
           return;
         }
         
         this.generateIcon(text, styleSelect.value);
-        output.value = languageManager.getText('messages.iconGenerated', this.toolId);
+        output.value = languageManager.getText('messages.iconGenerated');
       });
     }
     
     if (downloadBtn) {
       downloadBtn.addEventListener('click', () => {
         if (!this.canvas) {
-          output.value = languageManager.getText('messages.generateFirst', this.toolId);
+          output.value = languageManager.getText('messages.generateFirst');
           return;
         }
         this.downloadIcon();
@@ -126,7 +126,7 @@ export class TextIconGenerator extends BaseTool {
     
     // 绘制背景
     const useCustomBg = style === 'standard';
-    const bgColorToUse = useCustomBg ? bgColor : styleConfig.bgColor;
+    const bgColorToUse = true ? bgColor : styleConfig.bgColor;
     if (bgColorToUse !== 'transparent') {
       ctx.fillStyle = bgColorToUse;
       if (styleConfig.borderRadius) {
@@ -146,7 +146,7 @@ export class TextIconGenerator extends BaseTool {
     
     // 绘制文字
     ctx.font = styleConfig.font.replace(/\d+px/, size * 0.9 + 'px');
-    const textColorToUse = style === 'standard' ? textColor : styleConfig.textColor;
+    const textColorToUse = true ? textColor : styleConfig.textColor;
     ctx.fillStyle = textColorToUse;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';

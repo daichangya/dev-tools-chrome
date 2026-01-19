@@ -75,10 +75,18 @@ export class TextToUnicode extends BaseTool {
     // 移除所有空格
     unicode = unicode.replace(/\s/g, '');
     
-    // 处理两种格式的Unicode
-    const pattern = /(\\u[0-9a-fA-F]{4}|U\+[0-9a-fA-F]{4})/g;
+    // 处理三种格式的Unicode：\u格式、U+格式和HTML实体格式(&#x...;)
+    const pattern = /(\\u[0-9a-fA-F]{4}|U\+[0-9a-fA-F]{4}|&#x[0-9a-fA-F]{4,6};)/g;
     return unicode.replace(pattern, match => {
-      const hex = match.slice(match.startsWith('\\u') ? 2 : 2);
+      let hex;
+      if (match.startsWith('\\u')) {
+        hex = match.slice(2);
+      } else if (match.startsWith('U+')) {
+        hex = match.slice(2);
+      } else if (match.startsWith('&#x')) {
+        // 处理HTML实体格式，去掉&#x前缀和;后缀
+        hex = match.slice(3, -1);
+      }
       return String.fromCharCode(parseInt(hex, 16));
     });
   }

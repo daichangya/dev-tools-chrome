@@ -21,7 +21,11 @@ export class JSONFormatter extends BaseTool {
   preprocessJSON(jsonString) {
     let processedText = jsonString;
     // 处理类似{"msg":"校验通过","ret":"00000"}的格式
-    if (processedText.startsWith('{') && processedText.endsWith('}')) {
+    // if (processedText.startsWith('{') && processedText.endsWith('}')) {
+    if (true) {
+      processedText = processedText.replace(/\\n/g, '');
+      processedText = processedText.replace(/\\t/g, '');
+      processedText = processedText.replace(/\s+/g, ' ');
       processedText = processedText.replace(/\\"/g, '"');
     }
     console.log(processedText);

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "开发者工具",
-  "version": "1.0.0",
-  "description": "集成JSON/XML格式化、文本加密解密、Base64编解码、编码转换等开发者常用工具套件",
+  "name": "Dev Tools",
+  "version": "1.0.1",
+  "description": "Integrated developer tool suite: JSON/XML formatting, text encryption/decryption, Base64 encoding/decoding, encoding conversion",
   "action": {
     "default_icon": {
       "16": "images/icon16.png",
@@ -18,9 +18,10 @@
     "48": "images/icon48.png",
     "128": "images/icon128.png"
   },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
   "permissions": [
-    "clipboardWrite",
-    "clipboardRead",
-    "tabs"
+    "clipboardWrite"
   ]
 }

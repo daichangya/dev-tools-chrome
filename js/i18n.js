@@ -1,5 +1,22 @@
 // 语言配置文件
 const i18n = {
+  // 获取浏览器语言并返回对应的语言代码
+  getBrowserLanguage: function() {
+    const browserLang = navigator.language || navigator.userLanguage;
+    return browserLang.startsWith('zh') ? 'zh' : 'en';
+  },
+  // 设置当前语言
+  setLanguage: function(lang) {
+    this.currentLanguage = lang in this ? lang : 'en';
+    return this.currentLanguage;
+  },
+  // 初始化语言设置
+  init: function() {
+    this.currentLanguage = this.setLanguage(this.getBrowserLanguage());
+    console.log(`Current language: ${this.currentLanguage}`);
+    return this.currentLanguage;
+  },
+  currentLanguage: 'en',
   zh: {
     appTitle: '开发者工具',
     appSubtitle: '助力开发人员和IT工作者',

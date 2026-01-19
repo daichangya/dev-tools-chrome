@@ -8,8 +8,8 @@ export class TextDiff extends BaseTool {
 
   show() {
     this.container.innerHTML = `
-      <h2>${this.title}</h2>
-      <p>${this.description}</p>
+     <h2>${this.getTitle()}</h2>
+     <p class="description">${this.getDescription()}</p>
       <div class="controls">
           <select id="compareType">
             <option value="character">${languageManager.getToolText(this.toolId,'character')}</option>

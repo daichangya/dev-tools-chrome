@@ -27,8 +27,8 @@ class LanguageManager {
     const langData = i18n[this.currentLanguage];
     if (!langData) return key;
     if(!category && key.includes('.')){
-      const [category, key] = key.split('.');
-      return langData[category]?.[key] || key;
+      const [cat, k] = key.split('.');
+      return langData[cat]?.[k] || key;
     }
 
     if (category) {

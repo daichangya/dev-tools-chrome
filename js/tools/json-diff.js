@@ -8,8 +8,8 @@ export class JSONDiff extends BaseTool {
 
   show() {
     this.container.innerHTML = `
-      <h2>${this.title}</h2>
-      <p>${this.description}</p>
+     <h2>${this.getTitle()}</h2>
+     <p class="description">${this.getDescription()}</p>
       <div class="controls">
         <button id="processBtn">${languageManager.getText('compare', 'buttons')}</button>
         <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
