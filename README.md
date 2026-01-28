@@ -4,7 +4,7 @@
 
 ## 📋 项目简介
 
-本项目是一个基于 Chrome Extension Manifest V3 开发的开发者工具集合，提供14种常用的文本处理、格式化和转换工具。该扩展采用现代化的前端技术栈，支持中英文双语界面，具有良好的用户体验和可扩展的架构设计。
+本项目是一个基于 Chrome Extension Manifest V3 开发的开发者工具集合，提供 **15 种**常用的文本处理、格式化和转换工具。该扩展采用现代化的前端技术栈，支持中英文双语界面，具有良好的用户体验和可扩展的架构设计。
 
 ## 📚 文档导航
 
@@ -16,7 +16,7 @@
 
 ### 核心特性
 
-- ✅ **14种实用工具** - 覆盖JSON/XML处理、加密解密、编码转换等多个场景
+- ✅ **15 种实用工具** - 覆盖 JSON/XML 处理、加密解密、编码转换、图表生成等多个场景
 - ✅ **双语支持** - 内置中英文界面，支持实时切换
 - ✅ **模块化架构** - 基于ES6模块化设计，易于扩展和维护
 - ✅ **美观UI** - 采用Material Design图标和现代化CSS设计
@@ -39,11 +39,13 @@ dev-tools-chrome/
 │   ├── icon16.png
 │   ├── icon48.png
 │   └── icon128.png
-└── js/                        # JavaScript源码目录
+└── js/                        # JavaScript 源码目录
     ├── tools.js              # 工具管理器
+    ├── tool-registry.js      # 工具注册表（分类、图标、加载器）
     ├── base-tool.js          # 工具基类
     ├── i18n.js               # 国际化配置文件
     ├── language-manager.js   # 语言管理器
+    ├── json-editor.js        # CodeMirror 编辑器封装
     └── tools/                 # 工具实现目录
         ├── json-formatter.js
         ├── xml-formatter.js
@@ -58,6 +60,7 @@ dev-tools-chrome/
         ├── text-diff.js
         ├── ascii-art.js
         ├── text-icon-generator.js
+        ├── mermaid-viewer.js
         └── json-to-javabean.js
 ```
 
@@ -128,9 +131,14 @@ dev-tools-chrome/
 - 自定义文字图标
 - 多种样式（标准、圆角、描边）
 - 颜色和大小自定义
-- PNG格式导出
+- PNG 格式导出
 
-### 14. JSON转JavaBean (JSON to JavaBean)
+### 14. Mermaid 图表查看器 (Mermaid Viewer)
+- 编辑 Mermaid 语法，实时渲染流程图、时序图等
+- 图表复制为 PNG 到剪贴板
+- 图表下载为 PNG 文件
+
+### 15. JSON转JavaBean (JSON to JavaBean)
 - JSON对象转JavaBean类
 - 自动生成getter/setter方法
 - 支持嵌套对象处理
@@ -320,29 +328,18 @@ export class CustomTool extends BaseTool {
    ```
 
 2. **注册工具**
-   在 `js/tools.js` 中导入并注册新工具:
+   在 `js/tool-registry.js` 中导入并加入注册表:
 
    ```javascript
    import { CustomTool } from './tools/custom-tool.js';
 
-   // 在 initializeTools() 方法中添加
-   this.tools = {
-     // ... 其他工具
-     'customtool': new CustomTool()
-   };
+   // 在 TOOL_REGISTRY 数组中添加（id、图标、分类、加载器）
+   { id: 'customtool', icon: 'mdi-icon-name', category: 'convert', loader: () => new CustomTool() }
    ```
 
-3. **添加菜单项**
-   在 `index.html` 中添加菜单项:
+   侧栏菜单会根据 `TOOL_REGISTRY` 与 `CATEGORY_ORDER` 自动生成，无需修改 `index.html`。
 
-   ```html
-   <div class="menu-item" data-tool-id="customtool">
-     <i class="mdi mdi-icon-name"></i>
-     <span>自定义工具</span>
-   </div>
-   ```
-
-4. **添加国际化文本**
+3. **添加国际化文本**
    在 `js/i18n.js` 中添加工具相关文本:
 
    ```javascript
@@ -392,8 +389,9 @@ export class CustomTool extends BaseTool {
 
 ### 工具管理
 
-- **js/tools.js**: 工具管理器，负责工具的注册、切换和显示
-- **js/base-tool.js**: 工具基类，提供统一的UI模板和通用功能接口
+- **js/tools.js**: 工具管理器，负责从注册表加载工具、侧栏渲染和工具切换
+- **js/tool-registry.js**: 工具注册表，定义工具 id、图标、分类及加载器，菜单以此为准自动生成
+- **js/base-tool.js**: 工具基类，提供统一的 UI 模板和通用功能接口
 
 ### 国际化
 
