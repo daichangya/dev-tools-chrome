@@ -43,41 +43,14 @@
 
 **文件**: `js/tools.js`
 
-工具管理器是整个应用的核心控制器，负责：
+工具管理器从 **工具注册表**（`js/tool-registry.js`）读入工具列表，负责：
 
-- **工具注册**: 在 `initializeTools()` 方法中初始化所有工具实例
-- **工具切换**: 通过 `switchTool()` 方法管理工具的显示和隐藏
-- **事件绑定**: 绑定侧边栏菜单项的点击事件
+- **工具注册**: 在 `initializeTools()` 中遍历 `TOOL_REGISTRY`，对每项执行 `loader()` 得到实例并填入 `this.tools[id]`
+- **侧栏菜单**: `renderToolMenu()` 根据 `TOOL_REGISTRY` 与 `CATEGORY_ORDER` 生成分组与菜单 DOM，挂载到 `#tool-menu-list`，文案取自 i18n 的 `categories` 与 `menuItems`
+- **工具切换**: `switchTool(menuItem)` 根据 `data-tool-id` 更新激活状态并调用对应工具的 `show()` / `hide()`
+- **事件绑定**: 在 `#tool-menu-list` 上做点击委托，由 `switchTool` 处理 `.menu-item` 点击
 
-**关键方法**:
-
-```javascript
-class ToolManager {
-  constructor() {
-    this.currentTool = null;      // 当前活动的工具
-    this.tools = {};               // 所有工具的注册表
-    this.initializeTools();        // 初始化所有工具
-    this.setupEventListeners();    // 绑定事件
-  }
-
-  initializeTools() {
-    // 创建所有工具实例
-    this.tools = {
-      'jsonformatter': new JSONFormatter(),
-      'textencryption': new TextEncryption(),
-      // ... 其他工具
-    };
-  }
-
-  switchTool(menuItem) {
-    // 1. 更新菜单激活状态
-    // 2. 隐藏当前工具
-    // 3. 显示新选中的工具
-  }
-}
-```
-
-**设计模式**: 注册表模式 + 单例模式（通过默认导出）
+**设计模式**: 注册表模式（工具列表与加载方式来自 tool-registry）+ 默认导出单例
 
 ### 2. BaseTool (工具基类)
 
@@ -206,13 +179,20 @@ const i18n = {
 
 ## 工具系统
 
-### 工具注册流程
+### 工具注册表
 
-1. **定义工具类**: 在 `js/tools/` 目录下创建工具类文件
-2. **导入工具**: 在 `js/tools.js` 中导入工具类
-3. **注册工具**: 在 `initializeTools()` 方法中创建实例
-4. **添加菜单**: 在 `index.html` 中添加菜单项
-5. **添加文本**: 在 `js/i18n.js` 中添加国际化文本
+工具列表以 **工具注册表** 为唯一数据源，由 `js/tool-registry.js` 导出。侧栏菜单由 ToolManager 根据注册表与 i18n 动态生成，不再在 `index.html` 中手写菜单项。
+
+- **TOOL_REGISTRY**：数组，每项含 `id`、`icon`（MDI 类名如 `mdi-code-json`）、`category`、`loader`（无参函数，返回工具实例）。
+- **CATEGORY_ORDER**：分类展示顺序；侧栏按该顺序分组，分组标题来自 i18n 的 `categories`。
+
+### 工具注册流程（新增工具时）
+
+1. **定义工具类**: 在 `js/tools/` 目录下创建工具类文件（继承 BaseTool）。
+2. **登记到注册表**: 在 `js/tool-registry.js` 中增加一条：`{ id, icon, category, loader: () => new XxxTool() }`，并在文件顶部添加对应 import。
+3. **添加国际化**: 在 `js/i18n.js` 的 `menuItems` 与 `tools[id]` 中为 zh/en 各增加该工具的文案；若使用新分类，则在 `categories` 中补充。
+
+**无需** 修改 `index.html`、也无需在 `js/tools.js` 中增加 import 或 `this.tools[id] = ...`；菜单与加载逻辑均从注册表读取。
 
 ### 工具实现示例
 

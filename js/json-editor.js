@@ -8,7 +8,7 @@
  * 将textarea转换为带语法高亮的代码编辑器
  * @param {HTMLTextAreaElement} textarea - 要转换的textarea元素
  * @param {Object} options - 配置选项
- * @param {string} options.mode - 编辑器模式：'json' 或 'xml'，默认为 'json'
+ * @param {string} options.mode - 编辑器模式：'json'、'xml' 或 'plain'，默认为 'json'
  * @param {string} options.placeholder - 占位符文本
  * @param {Function} options.onInput - 输入事件回调
  * @param {Function} options.onBlur - 失焦事件回调
@@ -18,7 +18,7 @@
  */
 export function createJsonEditor(textarea, options = {}) {
   const {
-    mode = 'json', // 'json' 或 'xml'
+    mode = 'json', // 'json'、'xml' 或 'plain'
     placeholder = '',
     onInput = null,
     onBlur = null,
@@ -41,6 +41,8 @@ export function createJsonEditor(textarea, options = {}) {
   let modeConfig;
   if (mode === 'xml') {
     modeConfig = 'xml';
+  } else if (mode === 'plain') {
+    modeConfig = null; // 无语法高亮，仅统一字体与样式
   } else {
     // 默认JSON模式
     modeConfig = { name: 'javascript', json: true };
@@ -57,7 +59,7 @@ export function createJsonEditor(textarea, options = {}) {
     indentUnit: 2,
     tabSize: 2,
     indentWithTabs: false,
-    autoCloseBrackets: mode === 'xml' ? false : true, // XML模式不支持autoCloseBrackets
+    autoCloseBrackets: (mode === 'xml' || mode === 'plain') ? false : true, // XML/plain 模式不自动补全括号
     matchBrackets: true,
     styleActiveLine: false
   });
@@ -95,15 +97,19 @@ export function createJsonEditor(textarea, options = {}) {
     setTimeout(() => {
       const computedStyle = window.getComputedStyle(textarea);
       const editorElement = editor.getWrapperElement();
-      
-      // 同步基本样式
+      const isInToolArea = textarea.closest('.input-group, .output-group, .mermaid-source-wrap');
+
       const width = computedStyle.width || textarea.style.width || '100%';
-      const height = computedStyle.height || textarea.style.height || textarea.getAttribute('style')?.match(/height:\s*([^;]+)/)?.[1] || '200px';
-      
       editorElement.style.width = width;
-      editorElement.style.height = height;
-      
-      // 刷新编辑器以应用样式
+
+      if (isInToolArea) {
+        editorElement.style.height = '';
+        editorElement.style.minHeight = '0';
+      } else {
+        const height = computedStyle.height || textarea.style.height || textarea.getAttribute('style')?.match(/height:\s*([^;]+)/)?.[1] || '200px';
+        editorElement.style.height = height;
+      }
+
       editor.refresh();
     }, 50);
   };

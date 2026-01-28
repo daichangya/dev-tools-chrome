@@ -3,6 +3,14 @@ const i18n = {
   zh: {
     appTitle: '开发者工具',
     appSubtitle: '助力开发人员和IT工作者',
+    categories: {
+      format: '格式化',
+      convert: '转换',
+      crypto: '加密',
+      diff: '比较',
+      generate: '生成',
+      codegen: '代码生成'
+    },
     menuItems: {
       'jsonformatter': 'JSON转换和格式化',
       'textencryption': '加密/解密文本',
@@ -17,7 +25,8 @@ const i18n = {
       'xmlformatter': 'XML 格式化',
       'texticongenerator': '文字图标生成器',
       'base64imageconverter': 'Base64转图片',
-      'jsontojavabean': 'JSON转JavaBean'
+      'jsontojavabean': 'JSON转JavaBean',
+      'mermaidviewer': 'Mermaid 展示'
     },
     tools: {
       'jsonformatter': {
@@ -32,7 +41,8 @@ const i18n = {
         decrypt: '解密',
         shiftPlaceholder: '位移量',
         inputRequired: '请输入要加密/解密的文本',
-        invalidBase64: '无效的Base64编码'
+        invalidBase64: '无效的Base64编码',
+        defaultText: '请输入要加密或解密的文本'
       },
       'base64converter': {
         title: 'Base64 文件转换器',
@@ -56,6 +66,7 @@ const i18n = {
       'texttoascii': {
         title: 'ASCII码转换工具',
         description: '将文本转换为ASCII码或二进制，或将ASCII码转换回文本',
+        defaultText: 'Hello',
         toAscii: '转换为ASCII',
         toBinary: '转换为二进制',
         toText: '转换为文本',
@@ -78,6 +89,8 @@ const i18n = {
         json2: 'JSON 2',
         json1Placeholder: '请输入第一个JSON对象...',
         json2Placeholder: '请输入第二个JSON对象...',
+        json1Default: '{"name": "A", "value": 1}',
+        json2Default: '{"name": "B", "value": 2}',
         diffResult: '差异结果',
         noDiffFound: '没有发现差异',
         compareError: '比较错误',
@@ -108,6 +121,8 @@ const i18n = {
         text2: '文本 2',
         text1Placeholder: '请输入第一段文本...',
         text2Placeholder: '请输入第二段文本...',
+        text1Default: '第一段示例文本',
+        text2Default: '第二段示例文本',
         diffResult: '差异结果',
         inputRequired: '请输入要比较的两段文本',
         openInWebsite: '在 jsdiff.com 中打开'
@@ -137,11 +152,24 @@ const i18n = {
       'base64imageconverter': {
         title: 'Base64转图片',
         description: '在Base64编码和图片之间转换',
+        defaultText: '',
         downloadImage: '下载图片',
         inputBase64ImageRequired: '请输入Base64编码的图片',
         imagePreviewGenerated: '图片预览已生成',
         invalidBase64Image: '无效的Base64图片编码',
         downloadFailed: '图片下载失败'
+      },
+      'mermaidviewer': {
+        title: 'Mermaid 展示',
+        description: '输入 Mermaid 语法实时渲染图表，支持复制与下载为 PNG',
+        sourceLabel: 'Mermaid 源码',
+        previewLabel: '图表预览',
+        render: '渲染',
+        copyImage: '复制图片',
+        downloadPNG: '下载 PNG',
+        renderFirst: '请先成功渲染图表',
+        inputPlaceholder: '输入 Mermaid 语法，如 graph LR A-->B',
+        inputRequired: '请输入 Mermaid 代码'
       }
     },
     buttons: {
@@ -149,7 +177,9 @@ const i18n = {
       copy: '复制结果',
       clear: '清空',
       generate: '生成',
-      downloadPNG: '下载PNG'
+      downloadPNG: '下载PNG',
+      convert: '转换',
+      compare: '比较'
     },
     messages: {
       inputRequired: '请输入要转换的内容',
@@ -166,7 +196,15 @@ const i18n = {
   },
   en: {
     appTitle: 'Developer Tools',
-    appSubtitle: 'Empowering Developers and IT Professionals',
+    appSubtitle: 'Developers and IT Professionals',
+    categories: {
+      format: 'Format',
+      convert: 'Convert',
+      crypto: 'Crypto',
+      diff: 'Diff',
+      generate: 'Generate',
+      codegen: 'Code Gen'
+    },
     menuItems: {
       'jsonformatter': 'JSON Formatter',
       'textencryption': 'Text Encryption',
@@ -181,7 +219,8 @@ const i18n = {
       'xmlformatter': 'XML Formatter',
       'texticongenerator': 'Text Icon Generator',
       'base64imageconverter': 'Base64 to Image',
-      'jsontojavabean': 'JSON to JavaBean'
+      'jsontojavabean': 'JSON to JavaBean',
+      'mermaidviewer': 'Mermaid Viewer'
     },
     tools: {
       'jsonformatter': {
@@ -196,7 +235,8 @@ const i18n = {
         decrypt: 'Decrypt',
         shiftPlaceholder: 'Shift amount',
         inputRequired: 'Please enter text to encrypt/decrypt',
-        invalidBase64: 'Invalid Base64 encoding'
+        invalidBase64: 'Invalid Base64 encoding',
+        defaultText: 'Enter text to encrypt or decrypt'
       },
       'base64converter': {
         title: 'Base64 Converter',
@@ -220,6 +260,7 @@ const i18n = {
       'texttoascii': {
         title: 'ASCII Code Converter',
         description: 'Convert text to ASCII codes or binary, and vice versa',
+        defaultText: 'Hello',
         toAscii: 'To ASCII',
         toBinary: 'To Binary',
         toText: 'To Text',
@@ -242,6 +283,8 @@ const i18n = {
         json2: 'JSON 2',
         json1Placeholder: 'Enter first JSON object...',
         json2Placeholder: 'Enter second JSON object...',
+        json1Default: '{"name": "A", "value": 1}',
+        json2Default: '{"name": "B", "value": 2}',
         diffResult: 'Diff result',
         noDiffFound: 'No differences found',
         compareError: 'Comparison error',
@@ -272,6 +315,8 @@ const i18n = {
         text2: 'Text 2',
         text1Placeholder: 'Enter first text block...',
         text2Placeholder: 'Enter second text block...',
+        text1Default: 'First sample text',
+        text2Default: 'Second sample text',
         diffResult: 'Diff result',
         inputRequired: 'Please enter two text blocks to compare',
         openInWebsite: 'Open in jsdiff.com'
@@ -301,11 +346,24 @@ const i18n = {
       'base64imageconverter': {
         title: 'Base64 to Image',
         description: 'Convert between Base64 encoding and images',
+        defaultText: '',
         downloadImage: 'Download Image',
         inputBase64ImageRequired: 'Please enter Base64 encoded image',
         imagePreviewGenerated: 'Image preview generated',
         invalidBase64Image: 'Invalid Base64 image encoding',
         downloadFailed: 'Image download failed'
+      },
+      'mermaidviewer': {
+        title: 'Mermaid Viewer',
+        description: 'Render Mermaid diagrams from syntax, copy or download as PNG',
+        sourceLabel: 'Mermaid Source',
+        previewLabel: 'Diagram Preview',
+        render: 'Render',
+        copyImage: 'Copy Image',
+        downloadPNG: 'Download PNG',
+        renderFirst: 'Please render the diagram first',
+        inputPlaceholder: 'Enter Mermaid syntax, e.g. graph LR A-->B',
+        inputRequired: 'Please enter Mermaid code'
       }
     },
     buttons: {
@@ -313,7 +371,9 @@ const i18n = {
       copy: 'Copy Result',
       clear: 'Clear',
       generate: 'Generate',
-      downloadPNG: 'Download PNG'
+      downloadPNG: 'Download PNG',
+      convert: 'Convert',
+      compare: 'Compare'
     },
     messages: {
       inputRequired: 'Please enter content to convert',

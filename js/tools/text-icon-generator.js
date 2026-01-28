@@ -1,10 +1,12 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class TextIconGenerator extends BaseTool {
   constructor() {
     super();
     this.defaultValue = 'A';
+    this.inputEditor = null;
     this.iconSize = 128;
     this.styles = {
       standard: {
@@ -29,10 +31,17 @@ export class TextIconGenerator extends BaseTool {
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
     const input = document.getElementById('input');
-    if (input) input.value = this.defaultValue;
-    
+    if (input) {
+      input.value = this.defaultValue;
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'iconPreview'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      this.inputEditor.setValue(this.defaultValue);
+    }
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
   }
@@ -48,8 +57,8 @@ export class TextIconGenerator extends BaseTool {
       <input type="color" id="bgColor" value="#ffffff" title="${languageManager.getToolText(this.toolId,'bgColor')}">
       <input type="number" id="sizeSlider" min="16" max="512" value="128" title="${languageManager.getToolText(this.toolId,'iconSize')}">
       <span id="sizeValue">128px</span>
-      <button id="generateBtn">${languageManager.getText('generate','buttons')}</button>
-      <button id="downloadBtn">${languageManager.getText('downloadPNG','buttons')}</button>
+      <button id="generateBtn" class="btn-secondary">${languageManager.getText('generate','buttons')}</button>
+      <button id="downloadBtn" class="btn-secondary">${languageManager.getText('downloadPNG','buttons')}</button>
     `;
   }
   
@@ -84,21 +93,22 @@ export class TextIconGenerator extends BaseTool {
     
     if (generateBtn) {
       generateBtn.addEventListener('click', () => {
-        const text = input.value.trim().charAt(0);
+        const raw = this.inputEditor ? this.inputEditor.getValue() : input.value;
+        const text = (raw || '').trim().charAt(0);
         if (!text) {
-          output.value = languageManager.getText('messages.inputTextRequired', this.toolId);
+          output.value = languageManager.getText('inputTextRequired', 'messages');
           return;
         }
         
         this.generateIcon(text, styleSelect.value);
-        output.value = languageManager.getText('messages.iconGenerated', this.toolId);
+        output.value = languageManager.getText('iconGenerated', 'messages');
       });
     }
     
     if (downloadBtn) {
       downloadBtn.addEventListener('click', () => {
         if (!this.canvas) {
-          output.value = languageManager.getText('messages.generateFirst', this.toolId);
+          output.value = languageManager.getText('generateFirst', 'messages');
           return;
         }
         this.downloadIcon();

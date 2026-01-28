@@ -1,13 +1,26 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class TextEncryption extends BaseTool {
   constructor() {
     super();
+    this.inputEditor = null;
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
+    const input = document.getElementById('input');
+    const defaultVal = languageManager.getToolText(this.toolId, 'defaultText') || '';
+    if (input) {
+      input.value = defaultVal;
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'inputRequired'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      if (defaultVal) this.inputEditor.setValue(defaultVal);
+    }
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
   }
@@ -24,8 +37,8 @@ export class TextEncryption extends BaseTool {
         </select>
         <input type="number" id="shift" value="3" min="1" max="25" style="display: none;" placeholder="${languageManager.getToolText(this.toolId,'shiftPlaceholder')}">
         <button id="processBtn">${languageManager.getText('process', 'buttons')}</button>
-        <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-        <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
+        <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+        <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
     `;
   }
 
@@ -44,7 +57,7 @@ export class TextEncryption extends BaseTool {
 
     if (processBtn) {
       processBtn.addEventListener('click', () => {
-        const inputText = input.value;
+        const inputText = this.inputEditor ? this.inputEditor.getValue() : input.value;
         if (!inputText) {
           output.value = languageManager.getToolText(this.toolId,'inputRequired');
           return;
@@ -66,7 +79,13 @@ export class TextEncryption extends BaseTool {
       });
     }
 
-    // 调用父类的通用事件监听器设置
+    // 清空时同时清空编辑器
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn && this.inputEditor) {
+      clearBtn.addEventListener('click', () => {
+        this.inputEditor.setValue('');
+      });
+    }
     this.setupCommonEventListeners();
   }
 

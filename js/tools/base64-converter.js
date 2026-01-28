@@ -1,16 +1,24 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class Base64Converter extends BaseTool {
   constructor() {
     super();
+    this.inputEditor = null;
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
     const input = document.getElementById('input');
     if (input) {
-      input.value = this.defaultValue;
+      input.value = this.defaultValue || '';
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'inputRequired'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      this.inputEditor.setValue(this.defaultValue || '');
     }
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
@@ -19,9 +27,9 @@ export class Base64Converter extends BaseTool {
   getControls() {
     return `
      <input type="file" id="fileInput" style="display: none;">
-          <button id="selectFileBtn">${languageManager.getToolText(this.toolId,'selectFile')}</button>
+          <button id="selectFileBtn" class="btn-secondary">${languageManager.getToolText(this.toolId,'selectFile')}</button>
           <button id="processBtn">${languageManager.getToolText(this.toolId,'encode')}</button>
-          <button id="decodeBtn">${languageManager.getToolText(this.toolId,'decode')}</button>
+          <button id="decodeBtn" class="btn-secondary">${languageManager.getToolText(this.toolId,'decode')}</button>
     `;
   }
 
@@ -43,14 +51,15 @@ export class Base64Converter extends BaseTool {
         const reader = new FileReader();
         reader.onload = (e) => {
           const base64String = e.target.result;
-          input.value = base64String;
+          if (this.inputEditor) this.inputEditor.setValue(base64String);
+          else input.value = base64String;
         };
         reader.readAsDataURL(file);
       }
     });
 
     processBtn.addEventListener('click', () => {
-      const inputText = input.value.trim();
+      const inputText = (this.inputEditor ? this.inputEditor.getValue() : input.value).trim();
       if (!inputText) {
         output.value = languageManager.getToolText(this.toolId,'inputRequired', this.toolId);
         return;
@@ -69,7 +78,7 @@ export class Base64Converter extends BaseTool {
     });
 
     decodeBtn.addEventListener('click', () => {
-      const inputText = input.value.trim();
+      const inputText = (this.inputEditor ? this.inputEditor.getValue() : input.value).trim();
       if (!inputText) {
         output.value = languageManager.getToolText(this.toolId,'inputBase64Required', this.toolId);
         return;
@@ -88,7 +97,10 @@ export class Base64Converter extends BaseTool {
       }
     });
 
-    // 调用父类的通用事件监听器设置
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn && this.inputEditor) {
+      clearBtn.addEventListener('click', () => this.inputEditor.setValue(''));
+    }
     this.setupCommonEventListeners();
   }
 

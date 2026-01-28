@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>开发者工具</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/materialdesignicons.min.css">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="js/lib/codemirror/codemirror.css">
@@ -17,64 +20,18 @@
       </select>
     </div>
   </div>
-  <div class="sidebar">
-    <div class="subtitle">助力开发人员和IT工作者</div>
-    <div class="menu-item active" data-tool-id="jsonformatter">
-      <i class="mdi mdi-code-json"></i>
-      <span>JSON转换和格式化</span>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="subtitle">助力开发人员和IT工作者</div>
+      <button class="sidebar-toggle" id="sidebar-toggle" title="收起/展开侧边栏">
+        <i class="mdi mdi-menu"></i>
+      </button>
     </div>
-    <div class="menu-item" data-tool-id="textencryption">
-      <i class="mdi mdi-shield-key"></i>
-      <span>加密/解密文本</span>
+    <div class="tool-menu-search">
+      <input type="text" id="tool-search" placeholder="搜索工具...">
+      <i class="mdi mdi-magnify"></i>
     </div>
-    <div class="menu-item" data-tool-id="base64converter">
-      <i class="mdi mdi-file-code"></i>
-      <span>Base64 文件转换器</span>
-    </div>
-    <div class="menu-item" data-tool-id="caseconverter">
-      <i class="mdi mdi-format-letter-case"></i>
-      <span>大小写转换</span>
-    </div>
-    <div class="menu-item" data-tool-id="texttoascii">
-      <i class="mdi mdi-code-array"></i>
-      <span>文本到 ASCII 二进制</span>
-    </div>
-    <div class="menu-item" data-tool-id="texttounicode">
-      <i class="mdi mdi-translate"></i>
-      <span>文转 Unicode</span>
-    </div>
-    <div class="menu-item" data-tool-id="jsondiff">
-      <i class="mdi mdi-file-compare"></i>
-      <span>JSON 差异比较</span>
-    </div>
-    <div class="menu-item" data-tool-id="stringreverser">
-      <i class="mdi mdi-format-text-rotation-none"></i>
-      <span>字符串逆序</span>
-    </div>
-    <div class="menu-item" data-tool-id="textdiff">
-      <i class="mdi mdi-file-document-multiple"></i>
-      <span>文本比较</span>
-    </div>
-    <div class="menu-item" data-tool-id="asciiartgenerator">
-      <i class="mdi mdi-format-text"></i>
-      <span>ASCII Art Text Generator</span>
-    </div>
-    <div class="menu-item active" data-tool-id="xmlformatter">
-      <i class="mdi mdi-xml"></i>
-      <span>XML 格式化</span>
-    </div>
-    <div class="menu-item" data-tool-id="texticongenerator">
-      <i class="mdi mdi-format-font"></i>
-      <span>文字图标生成器</span>
-    </div>
-    <div class="menu-item" data-tool-id="base64imageconverter">
-      <i class="mdi mdi-image"></i>
-      <span>Base64转图片</span>
-    </div>
-    <div class="menu-item" data-tool-id="jsontojavabean">
-      <i class="mdi mdi-language-java"></i>
-      <span>JSON转JavaBean</span>
-    </div>
+    <div id="tool-menu-list" class="tool-menu-list"></div>
   </div>
   <div class="main-content">
     <div class="tool-intro">
@@ -85,6 +42,7 @@
   </div>
 
   <script src="js/lib/diff.js"></script>
+  <script src="js/lib/mermaid/mermaid.min.js"></script>
   <script src="js/lib/codemirror/codemirror.js"></script>
   <script src="js/lib/codemirror/javascript.js"></script>
   <script src="js/lib/codemirror/xml.js"></script>

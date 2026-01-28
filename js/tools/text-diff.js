@@ -5,91 +5,89 @@
  */
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class TextDiff extends BaseTool {
   constructor() {
     super();
+    this.input1Editor = null;
+    this.input2Editor = null;
   }
 
   show() {
     this.container.innerHTML = `
-      <h2>${this.title}</h2>
-      <p>${this.description}</p>
-      <div class="controls">
+      <div class="tool-container">
+        <h2>${this.title}</h2>
+        <p class="description">${this.description}</p>
+        <div class="controls">
           <select id="compareType">
-            <option value="character">${languageManager.getToolText(this.toolId,'character')}</option>
-            <option value="word">${languageManager.getToolText(this.toolId,'word')}</option>
-            <option value="line">${languageManager.getToolText(this.toolId,'line')}</option>
+            <option value="character">${languageManager.getToolText(this.toolId, 'character')}</option>
+            <option value="word">${languageManager.getToolText(this.toolId, 'word')}</option>
+            <option value="line">${languageManager.getToolText(this.toolId, 'line')}</option>
           </select>
           <button id="processBtn">${languageManager.getText('compare', 'buttons')}</button>
-          <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-          <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
-          <a href="https://jsdiff.com/" target="_blank" style="margin-left: 10px; color: #0066cc; text-decoration: none;">
-            🌐 ${languageManager.getToolText(this.toolId, 'openInWebsite') || '在 jsdiff.com 中打开'}
+          <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+          <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
+          <a href="https://jsdiff.com/" target="_blank" class="tool-external-link" rel="noopener noreferrer">
+            ${languageManager.getToolText(this.toolId, 'openInWebsite') || '在 jsdiff.com 中打开'}
           </a>
-      </div>
-      <div class="container" style="display: flex; flex-direction: column; gap: 20px;">
-        <div style="display: flex; justify-content: space-between; gap: 20px;">
-          <div class="input-container" style="width: 48%;">
-            <h3>${languageManager.getToolText(this.toolId,'text1')}</h3>
-            <textarea id="input" placeholder="${languageManager.getToolText(this.toolId,'text1Placeholder')}" style="width: 100%; height: 200px;"></textarea>
-          </div>
-          <div class="input-container" style="width: 48%;">
-            <h3>${languageManager.getToolText(this.toolId,'text2')}</h3>
-            <textarea id="input2" placeholder="${languageManager.getToolText(this.toolId,'text2Placeholder')}" style="width: 100%; height: 200px;"></textarea>
-          </div>
         </div>
-        <div class="output-container" style="width: 100%;">
-          <h3>${languageManager.getToolText(this.toolId,'diffResult')}</h3>
-          <div id="output" class="diff-output" style="height: 300px;"></div>
+        <div class="input-output input-output-diff">
+          <div class="input-output-diff-row">
+            <div class="input-group">
+              <label>${languageManager.getToolText(this.toolId, 'text1')}</label>
+              <textarea id="input" placeholder="${languageManager.getToolText(this.toolId, 'text1Placeholder')}"></textarea>
+            </div>
+            <div class="input-group">
+              <label>${languageManager.getToolText(this.toolId, 'text2')}</label>
+              <textarea id="input2" placeholder="${languageManager.getToolText(this.toolId, 'text2Placeholder')}"></textarea>
+            </div>
+          </div>
+          <div class="output-group">
+            <label>${languageManager.getToolText(this.toolId, 'diffResult')}</label>
+            <div id="output" class="diff-output"></div>
+          </div>
         </div>
       </div>
     `;
+    const input = document.getElementById('input');
+    const input2 = document.getElementById('input2');
+    const text1Default = languageManager.getToolText(this.toolId, 'text1Default') || '';
+    const text2Default = languageManager.getToolText(this.toolId, 'text2Default') || '';
+    if (input) input.value = text1Default;
+    if (input2) input2.value = text2Default;
+
+    if (input) {
+      this.input1Editor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'text1Placeholder'),
+        onInput: () => {
+          if (this.input2Editor && this.input1Editor.getValue().trim() && this.input2Editor.getValue().trim()) {
+            this.performDiff();
+          }
+        }
+      });
+      if (text1Default) this.input1Editor.setValue(text1Default);
+    }
+    if (input2) {
+      this.input2Editor = createJsonEditor(input2, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'text2Placeholder'),
+        onInput: () => {
+          if (this.input1Editor && this.input1Editor.getValue().trim() && this.input2Editor.getValue().trim()) {
+            this.performDiff();
+          }
+        }
+      });
+      if (text2Default) this.input2Editor.setValue(text2Default);
+    }
+
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
-
-    // 添加差异显示样式
-    this.addStyles();
   }
 
   addStyles() {
-    if (document.getElementById('text-diff-styles')) return;
-    
-    const style = document.createElement('style');
-    style.id = 'text-diff-styles';
-    style.textContent = `
-      .diff-output {
-        font-family: monospace;
-        white-space: pre-wrap;
-        padding: 10px;
-        background: #f5f5f5;
-        border: 1px solid #ddd;
-        max-height: 400px;
-        overflow-y: auto;
-      }
-      .diff-output ins {
-        background-color: #e6ffe6;
-        color: #006600;
-        text-decoration: none;
-      }
-      .diff-output del {
-        background-color: #ffe6e6;
-        color: #cc0000;
-        text-decoration: none;
-      }
-      .diff-added {
-        background-color: #e6ffe6;
-        color: #006600;
-      }
-      .diff-removed {
-        background-color: #ffe6e6;
-        color: #cc0000;
-      }
-      .diff-unchanged {
-        color: #666;
-      }
-    `;
-    document.head.appendChild(style);
+    /* Diff 样式已统一迁移至 css/styles.css（.tool-container .diff-output 等） */
   }
 
   setupSpecificEventListeners() {
@@ -105,17 +103,13 @@ export class TextDiff extends BaseTool {
       });
     }
 
-    // 输入变化时自动比较
-    if (input && input2 && compareType) {
-      const performDiff = () => {
-        if (input.value.trim() && input2.value.trim()) {
+    // 输入变化时自动比较（已由 CodeMirror onInput 处理；compareType 变更时触发）
+    if (compareType) {
+      compareType.addEventListener('change', () => {
+        if (this.input1Editor && this.input2Editor && this.input1Editor.getValue().trim() && this.input2Editor.getValue().trim()) {
           this.performDiff();
         }
-      };
-      
-      input.addEventListener('input', performDiff);
-      input2.addEventListener('input', performDiff);
-      compareType.addEventListener('change', performDiff);
+      });
     }
 
     // 设置copy按钮（输出是div，需要特殊处理）
@@ -143,26 +137,22 @@ export class TextDiff extends BaseTool {
     const clearBtn = document.getElementById('clearBtn');
     if (clearBtn) {
       clearBtn.addEventListener('click', () => {
-        const input = document.getElementById('input');
-        const input2 = document.getElementById('input2');
         const output = document.getElementById('output');
-        if (input) input.value = '';
-        if (input2) input2.value = '';
+        if (this.input1Editor) this.input1Editor.setValue('');
+        if (this.input2Editor) this.input2Editor.setValue('');
         if (output) output.innerHTML = '';
       });
     }
   }
 
   performDiff() {
-    const input = document.getElementById('input');
-    const input2 = document.getElementById('input2');
     const output = document.getElementById('output');
     const compareType = document.getElementById('compareType');
 
-    if (!input || !input2 || !output || !compareType) return;
+    if (!output || !compareType) return;
 
-    const text1 = input.value;
-    const text2 = input2.value;
+    const text1 = this.input1Editor ? this.input1Editor.getValue() : (document.getElementById('input')?.value || '');
+    const text2 = this.input2Editor ? this.input2Editor.getValue() : (document.getElementById('input2')?.value || '');
 
     if (!text1 || !text2) {
       output.innerHTML = languageManager.getToolText(this.toolId,'inputRequired');

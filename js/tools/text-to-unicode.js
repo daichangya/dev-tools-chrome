@@ -1,17 +1,25 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class TextToUnicode extends BaseTool {
   constructor() {
     super();
-    this.defaultValue = languageManager.getToolText(this.toolId,'defaultText');
+    this.defaultValue = languageManager.getToolText(this.toolId, 'defaultText');
+    this.inputEditor = null;
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
     const input = document.getElementById('input');
-    if (input){
-        input.value = this.defaultValue;
+    if (input) {
+      input.value = this.defaultValue || '';
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'defaultText'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      this.inputEditor.setValue(this.defaultValue || '');
     }
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
@@ -27,9 +35,9 @@ export class TextToUnicode extends BaseTool {
           <option value="\\u">${languageManager.getToolText(this.toolId,'uFormat')}</option>
           <option value="U+">${languageManager.getToolText(this.toolId,'uplusFormat')}</option>
         </select>
-        <button id="processBtn">${languageManager.getText('convert', 'buttons')}</button>
-        <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-        <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
+        <button id="processBtn" class="btn-secondary">${languageManager.getText('convert', 'buttons')}</button>
+        <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+        <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
     `;
   }
 
@@ -42,7 +50,7 @@ export class TextToUnicode extends BaseTool {
 
     if (processBtn) {
       processBtn.addEventListener('click', () => {
-        const inputText = input.value.trim();
+        const inputText = (this.inputEditor ? this.inputEditor.getValue() : input.value).trim();
         if (!inputText) {
           output.value = languageManager.getToolText(this.toolId,'inputRequired');
           return;
@@ -60,7 +68,10 @@ export class TextToUnicode extends BaseTool {
       });
     }
 
-    // 调用父类的通用事件监听器设置
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn && this.inputEditor) {
+      clearBtn.addEventListener('click', () => this.inputEditor.setValue(''));
+    }
     this.setupCommonEventListeners();
   }
 

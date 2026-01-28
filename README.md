@@ -9,6 +9,7 @@
 ## 📚 文档导航
 
 - **[README.md](./README.md)** - 项目概览和使用指南（当前文档）
+- **[更新日志](./CHANGELOG.md)** - 版本更新记录
 - **[快速上手](./docs/QUICK_START.md)** - 5分钟快速开始和开发指南
 - **[架构文档](./docs/ARCHITECTURE.md)** - 详细的技术架构和实现细节
 - **[工具使用指南](./docs/TOOLS_GUIDE.md)** - 所有工具的详细使用说明
@@ -454,7 +455,7 @@ export class CustomTool extends BaseTool {
 
 ---
 
-**版本**: 1.0.2  
-**最后更新**: 2024
+**版本**: 1.0.5  
+**最后更新**: 2025-01-28
 
-如有问题或建议，欢迎通过Issue反馈！
+详细更新内容见 [CHANGELOG.md](./CHANGELOG.md)。如有问题或建议，欢迎通过 Issue 反馈！

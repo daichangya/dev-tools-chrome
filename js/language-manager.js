@@ -50,20 +50,22 @@ class LanguageManager {
     document.querySelector('.logo').textContent = this.getText('appTitle');
     document.querySelector('.subtitle').textContent = this.getText('appSubtitle');
 
-    // 更新菜单项
+    // 更新侧栏分组标题（菜单由 ToolManager 根据注册表动态生成）
+    document.querySelectorAll('.tool-menu-group').forEach((grp) => {
+      const cat = grp.getAttribute('data-category');
+      const titleEl = grp.querySelector('.tool-menu-group-title');
+      if (cat && titleEl) titleEl.textContent = this.getText(cat, 'categories') || cat;
+    });
+    // 更新菜单项文案
     const menuItems = document.querySelectorAll('.menu-item span');
-    menuItems.forEach(item => {
+    menuItems.forEach((item) => {
       const toolId = item.parentElement.getAttribute('data-tool-id');
-      if (toolId) {
-        item.textContent = this.getText(toolId, 'menuItems');
-      }
+      if (toolId) item.textContent = this.getText(toolId, 'menuItems');
     });
 
     // 触发当前工具的重新渲染
     const currentTool = document.querySelector('.menu-item.active');
-    if (currentTool) {
-      currentTool.click();
-    }
+    if (currentTool) currentTool.click();
   }
 }
 
