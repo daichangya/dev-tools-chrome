@@ -30,6 +30,7 @@ export class JSONFormatter extends BaseTool {
     if (output) {
       // 为输出也创建JSON语法高亮编辑器（只读）
       this.outputEditor = createJsonEditor(output, {
+        mode: 'json',
         placeholder: '',
         readOnly: true,
         onInput: () => {
@@ -66,6 +67,7 @@ export class JSONFormatter extends BaseTool {
             const errorMsg = '请输入要格式化的JSON字符串';
             if (this.outputEditor) {
               this.outputEditor.setValue(errorMsg);
+              this.outputEditor.refresh();
             } else {
               output.value = errorMsg;
             }
@@ -81,6 +83,7 @@ export class JSONFormatter extends BaseTool {
           const formatted = JSON.stringify(jsonObj, null, 2);
           if (this.outputEditor) {
             this.outputEditor.setValue(formatted);
+            this.outputEditor.refresh();
           } else {
             output.value = formatted;
           }
@@ -88,6 +91,7 @@ export class JSONFormatter extends BaseTool {
           const errorMsg = `JSON解析错误：${error.message}`;
           if (this.outputEditor) {
             this.outputEditor.setValue(errorMsg);
+            this.outputEditor.refresh();
           } else {
             output.value = errorMsg;
           }
@@ -127,6 +131,7 @@ export class JSONFormatter extends BaseTool {
         }
         if (this.outputEditor) {
           this.outputEditor.setValue('');
+          this.outputEditor.refresh();
         } else if (output) {
           output.value = '';
         }

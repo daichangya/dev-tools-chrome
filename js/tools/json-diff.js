@@ -19,116 +19,77 @@ export class JSONDiff extends BaseTool {
 
   show() {
     this.container.innerHTML = `
-      <h2>${this.title}</h2>
-      <p>${this.description}</p>
-      <div class="controls">
-        <button id="processBtn">${languageManager.getText('compare', 'buttons')}</button>
-        <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-        <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
-        <a href="https://jsdiff.com/" target="_blank" style="margin-left: 10px; color: #0066cc; text-decoration: none;">
-          🌐 ${languageManager.getToolText(this.toolId, 'openInWebsite') || '在 jsdiff.com 中打开'}
-        </a>
-      </div>
-      <div class="container" style="display: flex; flex-direction: column; gap: 20px;">
-        <div style="display: flex; justify-content: space-between; gap: 20px;">
-          <div class="input-container" style="width: 48%;">
-            <h3>${languageManager.getToolText(this.toolId,'json1')}</h3>
-            <textarea id="input" placeholder="${languageManager.getToolText(this.toolId,'json1Placeholder')}" style="width: 100%; height: 200px;"></textarea>
-          </div>
-          <div class="input-container" style="width: 48%;">
-            <h3>${languageManager.getToolText(this.toolId,'json2')}</h3>
-            <textarea id="input2" placeholder="${languageManager.getToolText(this.toolId,'json2Placeholder')}" style="width: 100%; height: 200px;"></textarea>
-          </div>
+      <div class="tool-container">
+        <h2>${this.title}</h2>
+        <p class="description">${this.description}</p>
+        <div class="controls">
+          <button id="processBtn">${languageManager.getText('compare', 'buttons')}</button>
+          <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+          <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
+          <a href="https://jsdiff.com/" target="_blank" class="tool-external-link" rel="noopener noreferrer">
+            ${languageManager.getToolText(this.toolId, 'openInWebsite') || '在 jsdiff.com 中打开'}
+          </a>
         </div>
-        <div class="output-container" style="width: 100%;">
-          <h3>${languageManager.getToolText(this.toolId,'diffResult')}</h3>
-          <div id="output" class="diff-output" style="width: 100%; height: 300px; overflow-y: auto; padding: 10px; background: #f5f5f5; border: 1px solid #ddd; font-family: monospace; white-space: pre-wrap;"></div>
+        <div class="input-output input-output-diff">
+          <div class="input-output-diff-row">
+            <div class="input-group">
+              <label>${languageManager.getToolText(this.toolId, 'json1')}</label>
+              <textarea id="input" placeholder="${languageManager.getToolText(this.toolId, 'json1Placeholder')}"></textarea>
+            </div>
+            <div class="input-group">
+              <label>${languageManager.getToolText(this.toolId, 'json2')}</label>
+              <textarea id="input2" placeholder="${languageManager.getToolText(this.toolId, 'json2Placeholder')}"></textarea>
+            </div>
+          </div>
+          <div class="output-group">
+            <label>${languageManager.getToolText(this.toolId, 'diffResult')}</label>
+            <div id="output" class="diff-output"></div>
+          </div>
         </div>
       </div>
     `;
-    
-    // 添加样式
+
     this.addStyles();
     this.setupSpecificEventListeners();
     
-    // 为输入框创建JSON语法高亮编辑器
+    // 为输入框创建JSON语法高亮编辑器并设置默认值
     setTimeout(() => {
       const input1 = document.getElementById('input');
       const input2 = document.getElementById('input2');
-      
+      const json1Default = languageManager.getToolText(this.toolId, 'json1Default') || '{"name": "A", "value": 1}';
+      const json2Default = languageManager.getToolText(this.toolId, 'json2Default') || '{"name": "B", "value": 2}';
+
       if (input1) {
         this.input1Editor = createJsonEditor(input1, {
           placeholder: languageManager.getToolText(this.toolId, 'json1Placeholder'),
           onInput: (e, value) => {
             input1.value = value;
-            // 自动触发比较
             if (value.trim() && input2 && input2.value.trim()) {
               this.performDiff();
             }
           }
         });
+        this.input1Editor.setValue(json1Default);
       }
-      
+
       if (input2) {
         this.input2Editor = createJsonEditor(input2, {
           placeholder: languageManager.getToolText(this.toolId, 'json2Placeholder'),
           onInput: (e, value) => {
             input2.value = value;
-            // 自动触发比较
             const input1Value = this.input1Editor ? this.input1Editor.getValue() : input1.value;
             if (value.trim() && input1Value && input1Value.trim()) {
               this.performDiff();
             }
           }
         });
+        this.input2Editor.setValue(json2Default);
       }
     }, 0);
   }
 
   addStyles() {
-    if (document.getElementById('json-diff-styles')) return;
-    
-    const style = document.createElement('style');
-    style.id = 'json-diff-styles';
-    style.textContent = `
-      .diff-output ins {
-        background-color: #e6ffe6;
-        color: #006600;
-        text-decoration: none;
-      }
-      .diff-output del {
-        background-color: #ffe6e6;
-        color: #cc0000;
-        text-decoration: none;
-      }
-      .json-key {
-        color: #881391;
-        font-weight: 500;
-      }
-      .json-string {
-        color: #0b7500;
-      }
-      .json-number {
-        color: #1c00cf;
-      }
-      .json-literal {
-        color: #1c00cf;
-        font-weight: 500;
-      }
-      .diff-output ins .json-key,
-      .diff-output ins .json-string,
-      .diff-output ins .json-number,
-      .diff-output ins .json-literal {
-        color: inherit;
-      }
-      .diff-output del .json-key,
-      .diff-output del .json-string,
-      .diff-output del .json-number,
-      .diff-output del .json-literal {
-        color: inherit;
-      }
-    `;
-    document.head.appendChild(style);
+    /* Diff 样式已统一迁移至 css/styles.css（.tool-container .diff-output 等） */
   }
 
   setupSpecificEventListeners() {

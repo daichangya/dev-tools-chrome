@@ -1,12 +1,12 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
-
+import { createJsonEditor } from '../json-editor.js';
 
 export class ASCIIArtGenerator extends BaseTool {
   constructor() {
     super();
-
     this.defaultValue = 'HELLO';
+    this.inputEditor = null;
     this.fonts = {
       standard: {
         A: '  /\\  \n /  \\ \n/====\\\n',
@@ -18,12 +18,17 @@ export class ASCIIArtGenerator extends BaseTool {
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
     const input = document.getElementById('input');
     if (input) {
       input.value = this.defaultValue;
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'standardFont'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      this.inputEditor.setValue(this.defaultValue);
     }
-    
     this.setupCommonEventListeners();
     this.setupSpecificEventListeners();
   }
@@ -35,9 +40,9 @@ export class ASCIIArtGenerator extends BaseTool {
             <option value="block">${languageManager.getToolText(this.toolId,'blockFont')}</option>
             <option value="simple">${languageManager.getToolText(this.toolId,'simpleFont')}</option>
           </select>
-          <button id="processBtn">${languageManager.getText('generate', 'buttons')}</button>
-          <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-          <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
+          <button id="processBtn" class="btn-secondary">${languageManager.getText('generate', 'buttons')}</button>
+          <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+          <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
     `;
   }
 
@@ -49,7 +54,7 @@ export class ASCIIArtGenerator extends BaseTool {
 
     if (processBtn) {
       processBtn.addEventListener('click', () => {
-        const inputText = input.value.trim();
+        const inputText = (this.inputEditor ? this.inputEditor.getValue() : input.value).trim();
         if (!inputText) {
           output.textContent = languageManager.getToolText(this.toolId,'inputRequired');
           return;
@@ -64,7 +69,10 @@ export class ASCIIArtGenerator extends BaseTool {
       });
     }
 
-    // 调用父类的通用事件监听器设置
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn && this.inputEditor) {
+      clearBtn.addEventListener('click', () => this.inputEditor.setValue(''));
+    }
     this.setupCommonEventListeners();
   }
 

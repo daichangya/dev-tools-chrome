@@ -1,21 +1,32 @@
 import BaseTool from '../base-tool.js';
 import languageManager from '../language-manager.js';
+import { createJsonEditor } from '../json-editor.js';
 
 export class Base64ImageConverter extends BaseTool {
-
   constructor() {
     super();
-    console.log(this.toolId);
+    this.inputEditor = null;
   }
 
   show() {
-    this.container.innerHTML = this.createUI()
+    this.container.innerHTML = this.createUI();
+    const input = document.getElementById('input');
+    const defaultVal = languageManager.getToolText(this.toolId, 'defaultText') || this.defaultValue || '';
+    if (input) {
+      input.value = defaultVal;
+      this.inputEditor = createJsonEditor(input, {
+        mode: 'plain',
+        placeholder: languageManager.getToolText(this.toolId, 'inputBase64ImageRequired'),
+        onInput: (e, value) => { input.value = value; }
+      });
+      if (defaultVal) this.inputEditor.setValue(defaultVal);
+    }
     this.setupEventListeners();
   }
 
   getControls() {
     return super.getControls() + `
-      <button id="downloadBtn">${languageManager.getToolText(this.toolId,'downloadImage')}</button>
+      <button id="downloadBtn" class="btn-secondary">${languageManager.getToolText(this.toolId,'downloadImage')}</button>
     `;
   }
 
@@ -26,16 +37,23 @@ export class Base64ImageConverter extends BaseTool {
     const downloadBtn = document.getElementById('downloadBtn');
     const input = document.getElementById('input');
     
+    const getInputValue = () => this.inputEditor ? this.inputEditor.getValue() : (input && input.value);
+
     if (processBtn) {
       processBtn.addEventListener('click', () => {
-        this.processBase64(input.value);
+        this.processBase64(getInputValue());
       });
     }
-    
+
     if (downloadBtn) {
       downloadBtn.addEventListener('click', () => {
-        this.downloadImage(input.value);
+        this.downloadImage(getInputValue());
       });
+    }
+
+    const clearBtn = document.getElementById('clearBtn');
+    if (clearBtn && this.inputEditor) {
+      clearBtn.addEventListener('click', () => this.inputEditor.setValue(''));
     }
   }
 

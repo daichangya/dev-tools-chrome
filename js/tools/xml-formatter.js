@@ -61,6 +61,7 @@ export class XMLFormatter extends BaseTool {
             const errorMsg = '请输入要格式化的XML代码';
             if (this.outputEditor) {
               this.outputEditor.setValue(errorMsg);
+              this.outputEditor.refresh();
             } else {
               output.value = errorMsg;
             }
@@ -70,6 +71,7 @@ export class XMLFormatter extends BaseTool {
           const formatted = this.formatXML(inputText);
           if (this.outputEditor) {
             this.outputEditor.setValue(formatted);
+            this.outputEditor.refresh();
           } else {
             output.value = formatted;
           }
@@ -77,6 +79,7 @@ export class XMLFormatter extends BaseTool {
           const errorMsg = `XML格式化错误：${error.message}`;
           if (this.outputEditor) {
             this.outputEditor.setValue(errorMsg);
+            this.outputEditor.refresh();
           } else {
             output.value = errorMsg;
           }
@@ -116,6 +119,7 @@ export class XMLFormatter extends BaseTool {
         }
         if (this.outputEditor) {
           this.outputEditor.setValue('');
+          this.outputEditor.refresh();
         } else if (output) {
           output.value = '';
         }
@@ -236,6 +240,7 @@ export class XMLFormatter extends BaseTool {
 
   /**
    * 转义XML特殊字符
+   * 属性值统一用双引号包裹，故只需转义 "；文本内容中 ' 和 " 均无需转义
    * @param {string} text - 要转义的文本
    * @returns {string} 转义后的文本
    */
@@ -245,7 +250,7 @@ export class XMLFormatter extends BaseTool {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+      .replace(/"/g, '&quot;');
+    // 单引号 ' 在双引号属性值和文本内容中均合法，不转义为 &apos;，避免 Don't 变成 Don&apos;t
   }
 }

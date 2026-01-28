@@ -6,7 +6,7 @@ class BaseTool {
     this.toolId = this.constructor.name.toLowerCase();
     this.title = this.getTitle();
     this.description = this.getDescription();
-    this.defaultValue = languageManager.getText('defaultText', this.toolId);
+    this.defaultValue = languageManager.getToolText(this.toolId, 'defaultText') || '';
   }
 
   show() {
@@ -42,8 +42,8 @@ class BaseTool {
   getControls() {
     return `
       <button id="processBtn">${languageManager.getText('process', 'buttons')}</button>
-      <button id="copyBtn">${languageManager.getText('copy', 'buttons')}</button>
-      <button id="clearBtn">${languageManager.getText('clear', 'buttons')}</button>
+      <button id="copyBtn" class="btn-secondary">${languageManager.getText('copy', 'buttons')}</button>
+      <button id="clearBtn" class="btn-secondary">${languageManager.getText('clear', 'buttons')}</button>
     `;
   }
 
